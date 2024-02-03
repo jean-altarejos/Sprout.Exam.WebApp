@@ -15,6 +15,11 @@ namespace Sprout.Exam.WebApp.Controllers
     [ApiController]
     public class EmployeesController : ControllerBase
     {
+        //private readonly IEmployeeRepository _employeeRepository;
+        //public EmployeesController(IEmployeeRepository employeeRepository)
+        //{
+        //    _employeeRepository = employeeRepository;
+        //}
 
         /// <summary>
         /// Refactor this method to go through proper layers and fetch from the DB.
@@ -62,7 +67,7 @@ namespace Sprout.Exam.WebApp.Controllers
         public async Task<IActionResult> Post(CreateEmployeeDto input)
         {
 
-           var id = await Task.FromResult(StaticEmployees.ResultList.Max(m => m.Id) + 1);
+            var id = await Task.FromResult(StaticEmployees.ResultList.Max(m => m.Id) + 1);
 
             StaticEmployees.ResultList.Add(new EmployeeDto
             {
@@ -100,12 +105,12 @@ namespace Sprout.Exam.WebApp.Controllers
         /// <param name="workedDays"></param>
         /// <returns></returns>
         [HttpPost("{id}/calculate")]
-        public async Task<IActionResult> Calculate(int id,decimal absentDays,decimal workedDays)
+        public async Task<IActionResult> Calculate(int id, decimal absentDays, decimal workedDays)
         {
             var result = await Task.FromResult(StaticEmployees.ResultList.FirstOrDefault(m => m.Id == id));
 
             if (result == null) return NotFound();
-            var type = (EmployeeType) result.TypeId;
+            var type = (EmployeeType)result.TypeId;
             return type switch
             {
                 EmployeeType.Regular =>
