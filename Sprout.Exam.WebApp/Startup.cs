@@ -37,7 +37,7 @@ namespace Sprout.Exam.WebApp
             services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
-            services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+            services.AddScoped<ApplicationDbContext>();
 
             services.AddIdentityServer()
                 .AddApiAuthorization<ApplicationUser, ApplicationDbContext>();

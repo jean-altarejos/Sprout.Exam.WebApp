@@ -7,6 +7,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Sprout.Exam.Business.DataTransferObjects;
 using Sprout.Exam.Common.Enums;
+using Sprout.Exam.WebApp.Models;
+using Sprout.Exam.WebApp.Repository;
+using Sprout.Exam.WebApp.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace Sprout.Exam.WebApp.Controllers
 {
@@ -20,6 +24,11 @@ namespace Sprout.Exam.WebApp.Controllers
         //{
         //    _employeeRepository = employeeRepository;
         //}
+        private readonly ApplicationDbContext _context;
+        public EmployeesController(ApplicationDbContext context)
+        {
+             _context = context;
+        }
 
         /// <summary>
         /// Refactor this method to go through proper layers and fetch from the DB.
@@ -28,8 +37,18 @@ namespace Sprout.Exam.WebApp.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var result = await Task.FromResult(StaticEmployees.ResultList);
-            return Ok(result);
+            var result = await _context.Employees.ToListAsync();
+
+            var employeesDto = from res in result
+                               select new EmployeeDto()
+                               {
+                                   FullName = res.FullName,
+                                   Tin = res.Tin,
+                                   TypeId = res.TypeId,
+                                   Birthdate = res.Birthdate,
+                                   Id = res.Id
+                               };
+            return Ok(employeesDto);
         }
 
         /// <summary>
@@ -39,8 +58,18 @@ namespace Sprout.Exam.WebApp.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var result = await Task.FromResult(StaticEmployees.ResultList.FirstOrDefault(m => m.Id == id));
-            return Ok(result);
+            var result = await Task.FromResult(_context.Employees.Find(id));
+
+            var employeesDto =  new EmployeeDto
+                               {
+                                   FullName = result.FullName,
+                                   Tin = result.Tin,
+                                   TypeId = result.TypeId,
+                                   Birthdate = result.Birthdate,
+                                   Id = result.Id
+                               };
+
+            return Ok(employeesDto);
         }
 
         /// <summary>
@@ -48,15 +77,23 @@ namespace Sprout.Exam.WebApp.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(EditEmployeeDto input)
+        public async Task<IActionResult> Put(EditEmployeeDto employee)
         {
-            var item = await Task.FromResult(StaticEmployees.ResultList.FirstOrDefault(m => m.Id == input.Id));
-            if (item == null) return NotFound();
-            item.FullName = input.FullName;
-            item.Tin = input.Tin;
-            item.Birthdate = input.Birthdate.ToString("yyyy-MM-dd");
-            item.TypeId = input.TypeId;
-            return Ok(item);
+            var item = await Task.FromResult(_context.Employees.Find(employee.Id));
+            var editEmp = new Employee()
+            {
+                FullName = item.FullName,
+                Birthdate = item.Birthdate,
+                Tin = item.Tin,
+                TypeId = item.TypeId,
+                Id = item.Id
+
+            };
+            _context.Employees.Update(editEmp);
+            if (employee == null) return NotFound();
+            
+
+            return Ok(editEmp);
         }
 
         /// <summary>
@@ -66,19 +103,20 @@ namespace Sprout.Exam.WebApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Post(CreateEmployeeDto input)
         {
-
-            var id = await Task.FromResult(StaticEmployees.ResultList.Max(m => m.Id) + 1);
-
-            StaticEmployees.ResultList.Add(new EmployeeDto
+            //var item = await Task.FromResult(_context.Employees.Max(m => m.Id) + 1);
+            var emp = new Employee
             {
-                Birthdate = input.Birthdate.ToString("yyyy-MM-dd"),
                 FullName = input.FullName,
-                Id = id,
                 Tin = input.Tin,
-                TypeId = input.TypeId
-            });
+                Birthdate = input.Birthdate.ToString("yyyy-mm-dd"),
+                TypeId = input.TypeId,
+                
+            };
 
-            return Created($"/api/employees/{id}", id);
+            _context.Add(emp);
+            await _context.SaveChangesAsync();
+
+            return Created($"/api/employees/{emp.Id}", emp.Id);
         }
 
 
@@ -87,11 +125,11 @@ namespace Sprout.Exam.WebApp.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(Employee id)
         {
-            var result = await Task.FromResult(StaticEmployees.ResultList.FirstOrDefault(m => m.Id == id));
-            if (result == null) return NotFound();
-            StaticEmployees.ResultList.RemoveAll(m => m.Id == id);
+            var item = await Task.FromResult(_context.Employees.Find(id));
+            _context.Employees.Remove(item);
+            await _context.SaveChangesAsync();
             return Ok(id);
         }
 
