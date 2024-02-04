@@ -1,4 +1,5 @@
-﻿using Sprout.Exam.WebApp.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using Sprout.Exam.WebApp.Data;
 using Sprout.Exam.WebApp.Models;
 using System.Collections.Generic;
 
@@ -35,12 +36,12 @@ namespace Sprout.Exam.WebApp.Repository
 
         public void Insert(Employee employee)
         {
-            _context.Employees.Add(employee);
+            _context.Employees.AddAsync(employee);
         }
 
         public void Save()
         {
-            _context.SaveChanges();
+            _context.SaveChangesAsync();
         }
 
         public void Update(Employee employee)
