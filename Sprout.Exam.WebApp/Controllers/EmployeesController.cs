@@ -143,9 +143,9 @@ namespace Sprout.Exam.WebApp.Controllers
         /// <param name="workedDays"></param>
         /// <returns></returns>
         [HttpPost("{id}/calculate")]
-        public async Task<IActionResult> Calculate(int id, decimal absentDays, decimal workedDays)
+        public async Task<IActionResult> Calculate(int id, Salary sal)
         {
-            var result = await Task.FromResult(StaticEmployees.ResultList.FirstOrDefault(m => m.Id == id));
+            var result = await Task.FromResult(_context.Employees.Find(id));
 
             if (result == null) return NotFound();
             var type = (EmployeeType)result.TypeId;
@@ -153,13 +153,42 @@ namespace Sprout.Exam.WebApp.Controllers
             {
                 EmployeeType.Regular =>
                     //create computation for regular.
-                    Ok(25000),
+                    Ok(regularEmployee()),
                 EmployeeType.Contractual =>
                     //create computation for contractual.
-                    Ok(20000),
+                    Ok(contractualEmployee()),
                 _ => NotFound("Employee Type not found")
-            };
+            }; 
 
+            decimal regularEmployee()
+            {
+                decimal salary = 20000;
+                decimal absences = (salary / 22) * sal.absentDays;
+                decimal tax = salary * Convert.ToDecimal(0.12);
+                decimal deduction = 0;
+                decimal netSal = 0;
+                if (absences > 0)
+                {
+                    deduction = absences + tax;
+                    netSal = salary - deduction;
+                    return Math.Round(netSal,2);
+                }
+                else
+                {
+                    deduction = salary - tax;
+                    netSal = deduction;
+                    return Math.Round(netSal, 2);
+                }
+
+                 
+            }
+
+            decimal contractualEmployee()
+            {
+                decimal ratePerDay = 500;
+                decimal netSal = ratePerDay * sal.workedDays;
+                return Math.Round(netSal, 2);
+            }
         }
 
     }
