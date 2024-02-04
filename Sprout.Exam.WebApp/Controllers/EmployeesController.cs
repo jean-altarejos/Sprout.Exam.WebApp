@@ -79,21 +79,31 @@ namespace Sprout.Exam.WebApp.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(EditEmployeeDto employee)
         {
-            var item = await Task.FromResult(_context.Employees.Find(employee.Id));
             var editEmp = new Employee()
             {
-                FullName = item.FullName,
-                Birthdate = item.Birthdate,
-                Tin = item.Tin,
-                TypeId = item.TypeId,
-                Id = item.Id
+                FullName = employee.FullName,
+                Birthdate = employee.Birthdate.ToString("yyyy-MM-dd"),
+                Tin = employee.Tin,
+                TypeId = employee.TypeId,
+                Id = employee.Id
 
             };
-            _context.Employees.Update(editEmp);
-            if (employee == null) return NotFound();
-            
 
-            return Ok(editEmp);
+            var item = await Task.FromResult(_context.Employees.Find(employee.Id));
+            if (item != null) 
+            {
+                item.FullName = editEmp.FullName;
+                item.Birthdate = editEmp.Birthdate;
+                item.Tin = editEmp.Tin;
+                item.TypeId = editEmp.TypeId;
+                item.Id = editEmp.Id;              
+            } 
+            else
+            {
+                return NotFound();
+            }
+            _context.SaveChanges();
+            return Ok(item);
         }
 
         /// <summary>
@@ -108,7 +118,7 @@ namespace Sprout.Exam.WebApp.Controllers
             {
                 FullName = input.FullName,
                 Tin = input.Tin,
-                Birthdate = input.Birthdate.ToString("yyyy-mm-dd"),
+                Birthdate = input.Birthdate.ToString("yyyy-MM-dd"),
                 TypeId = input.TypeId,
                 
             };
@@ -125,7 +135,7 @@ namespace Sprout.Exam.WebApp.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Employee id)
+        public async Task<IActionResult> Delete(int id)
         {
             var item = await Task.FromResult(_context.Employees.Find(id));
             _context.Employees.Remove(item);
