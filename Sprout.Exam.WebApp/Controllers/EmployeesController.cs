@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Authorization;
 using Sprout.Exam.Business.DataTransferObjects;
 using Sprout.Exam.Common.Enums;
 using Sprout.Exam.WebApp.Models;
-using Sprout.Exam.WebApp.Repository;
 using Sprout.Exam.WebApp.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -37,7 +36,7 @@ namespace Sprout.Exam.WebApp.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var result = await _context.Employees.ToListAsync();
+            var result = await _context.Employee.ToListAsync();
 
             var employeesDto = from res in result
                                select new EmployeeDto()
@@ -58,7 +57,7 @@ namespace Sprout.Exam.WebApp.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var result = await Task.FromResult(_context.Employees.Find(id));
+            var result = await Task.FromResult(_context.Employee.Find(id));
 
             var employeesDto =  new EmployeeDto
                                {
@@ -89,7 +88,7 @@ namespace Sprout.Exam.WebApp.Controllers
 
             };
 
-            var item = await Task.FromResult(_context.Employees.Find(employee.Id));
+            var item = await Task.FromResult(_context.Employee.Find(employee.Id));
             if (item != null) 
             {
                 item.FullName = editEmp.FullName;
@@ -137,8 +136,8 @@ namespace Sprout.Exam.WebApp.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var item = await Task.FromResult(_context.Employees.Find(id));
-            _context.Employees.Remove(item);
+            var item = await Task.FromResult(_context.Employee.Find(id));
+            _context.Employee.Remove(item);
             await _context.SaveChangesAsync();
             return Ok(id);
         }
@@ -155,7 +154,7 @@ namespace Sprout.Exam.WebApp.Controllers
         [HttpPost("{id}/calculate")]
         public async Task<IActionResult> Calculate(int id, Salary sal)
         {
-            var result = await Task.FromResult(_context.Employees.Find(id));
+            var result = await Task.FromResult(_context.Employee.Find(id));
 
             if (result == null) return NotFound();
             var type = (EmployeeType)result.TypeId;
