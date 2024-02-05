@@ -12,7 +12,6 @@ using Microsoft.Extensions.Hosting;
 
 using Sprout.Exam.WebApp.Data;
 using Sprout.Exam.WebApp.Models;
-using Sprout.Exam.WebApp.Repository;
 
 namespace Sprout.Exam.WebApp
 {
