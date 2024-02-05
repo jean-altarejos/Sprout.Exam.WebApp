@@ -28,67 +28,80 @@ export class EmployeeCalculate extends Component {
     : <div>
     <form>
 <div className='form-row'>
-<div className='form-group col-md-12'>
-  <label>Full Name: <b>{this.state.fullName}</b></label>
+<div className='form-group col-md-6'>
+  <label>Full Name: </label>
+  <input type='text' className='form-control' value={this.state.fullName}  readOnly/>
 </div>
 
-</div>
-
-<div className='form-row'>
-<div className='form-group col-md-12'>
-  <label >Birthdate: <b>{this.state.birthdate}</b></label>
-</div>
-</div>
-
-<div className="form-row">
-<div className='form-group col-md-12'>
-  <label>TIN: <b>{this.state.tin}</b></label>
+<div className='form-group col-md-6'>
+  <label >Birthdate:</label>
+  <input type='text' className='form-control' value={this.state.birthdate}  readOnly/>
 </div>
 </div>
 
 <div className="form-row">
-<div className='form-group col-md-12'>
-  <label>Employee Type: <b>{this.state.typeId === 1?"Regular": "Contractual"}</b></label>
-</div>
+<div className='form-group col-md-6'>
+  <label>TIN:</label>
+  <input type='text' className='form-control' value= {this.state.tin} readOnly/>
 </div>
 
-{ this.state.typeId === 1?
- <div className="form-row">
-     <div className='form-group col-md-12'><label>Salary: 20000 </label></div>
-     <div className='form-group col-md-12'><label>Tax: 12% </label></div>
-</div> : <div className="form-row">
-<div className='form-group col-md-12'><label>Rate Per Day: 500 </label></div>
-</div> }
+<div className='form-group col-md-6'>
+  <label>Employee Type:</label>
+  <input type='text' className='form-control' value={this.state.typeId === 1?"Regular": "Contractual"}  readOnly/>
+</div>
+</div>
 
 <div className="form-row">
 
 { this.state.typeId === 1? 
-<div className='form-group col-md-6'>
-  <label htmlFor='inputAbsentDays4'>Absent Days: </label>
-  <input type='text' className='form-control' id='inputAbsentDays4' onChange={this.handleChange.bind(this)} value={this.state.absentDays} name="absentDays" placeholder='Absent Days' />
-</div> :
-<div className='form-group col-md-6'>
-  <label htmlFor='inputWorkDays4'>Worked Days: </label>
-  <input type='text' className='form-control' id='inputWorkDays4' onChange={this.handleChange.bind(this)} value={this.state.workedDays} name="workedDays" placeholder='Worked Days' />
+
+  <div class="card col-6">
+  <div class="card-header">
+    Regular Employee
+  </div>
+  <div class="card-body">
+    <div className='form-group col-md-12'><label>Salary: <b>20000</b> </label></div>
+    <div className='form-group col-md-12'><label>Tax: <b>12%</b> </label></div>
+    <div className='form-group'>
+    <label htmlFor='inputAbsentDays4'>Absent Days: </label>
+    <input type='text' className='form-control' id='inputAbsentDays4' onChange={this.handleChange.bind(this)} value={this.state.absentDays} name="absentDays" placeholder='Absent Days' />
+  </div>
+  </div>
 </div>
+ :
+ <div className='card col-6'>
+ <div class="card-header">
+    Contractual Employee
+ </div>
+ <div class="card-body">
+    <div className='form-group col-md-12'><label>Rate Per Day: <b>500</b> </label></div>
+    <label htmlFor='inputWorkDays4'>Worked Days: </label>
+    <input type='text' className='form-control' id='inputWorkDays4' onChange={this.handleChange.bind(this)} value={this.state.workedDays} name="workedDays" placeholder='Worked Days' />
+ </div>
+ 
+</div>
+
 }
+
+<div className='card col-6'>
+  <div class="card-header">
+      Net Income:
+  </div>
+  <div class="card-body">
+    <input type='text' className='form-control font-weight-bold' value= {this.state.netIncome} readOnly/>
+  </div>
+</div>
 </div>
 
-<div className="form-row">
-<div className='form-group col-md-12'>
-  <label>Net Income: <b>{this.state.netIncome}</b></label>
-</div>
-</div>
-
-<button type="submit" onClick={this.handleSubmit.bind(this)} disabled={this.state.loadingCalculate} className="btn btn-primary mr-2">{this.state.loadingCalculate?"Loading...": "Calculate"}</button>
-<button type="button" onClick={() => this.props.history.push("/employees/index")} className="btn btn-primary">Back</button>
-</form>
+<button type="submit" onClick={this.handleSubmit.bind(this)} disabled={this.state.loadingCalculate} className="btn btn-warning mr-2">{this.state.loadingCalculate?"Loading...": "Calculate"}</button>
+<button type="button" onClick={() => this.props.history.push("/employees/index")} className="btn btn-danger">Back</button>
+    </form>
 </div>;
 
 
     return (
         <div>
-        <h1 id="tabelLabel" >Employee Calculate Salary</h1>
+        <h1 id="tabelLabel" >Salary Calculator</h1>
         <br/>
         {contents}
       </div>
